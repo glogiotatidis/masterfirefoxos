@@ -7,7 +7,7 @@ sleep 5s;
 # Run the tests
 ./manage.py test
 
-if [ ! "$DOTCI_BRANCH" == "master" ];
+if [ ! "$DOTCI_BRANCH" == "dotci2" ];
 then
     echo "Not on master branch, not pushing to docker hub.";
     exit 0;
