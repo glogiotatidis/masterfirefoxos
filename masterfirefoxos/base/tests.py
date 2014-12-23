@@ -75,3 +75,9 @@ class TestUtils(SimpleTestCase):
         self.assertTrue(
             '{% blocktrans trimmed %}\n<p>Rich Text</p>\n{% endblocktrans %}'
             in l10n_template)
+
+
+class TestFail(SimpleTestCase):
+    def test_base(self):
+        from nose.tools import eq_
+        eq_(1, 1)
