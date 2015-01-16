@@ -28,6 +28,10 @@
     {% endblock %}
 
       <div class="page-intro">
+        {{ render_region(feincms_page, "header", request) }}
+      </div>
+
+      <div class="page-intro">
         {{ render_region(feincms_page, "main", request) }}
       </div>
 

@@ -19,6 +19,7 @@ Page.register_templates(
         'title': 'Home template',
         'path': 'home.html',
         'regions': (
+            ('header', 'Header content area'),
             ('main', 'Main content area'),
         ),
     }
