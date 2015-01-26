@@ -97,8 +97,49 @@ class RichTextEntry(RichTextContent):
         return render_to_string('richtext.html', {'html': _(self.text)})
 
 
+class QuizEntry(models.Model):
+    question = models.TextField(max_length=255)
+    image = models.FileField(blank=True, null=True)
+    answer_1 = models.TextField(max_length=255, help_text='This is the correct answer')
+    answer_2 = models.TextField(max_length=255)
+    answer_3 = models.TextField(max_length=255, blank=True, default='')
+    answer_4 = models.TextField(max_length=255, blank=True, default='')
+
+    _l10n_fields = ['question', 'answer_1', 'answer_2',
+                    'answer_3', 'answer_4']
+
+    class Meta:
+        abstract = True
+
+    @property
+    def answers(self):
+        import random
+        a = [
+            {'correct': True, 'text': _(self.answer_1)}
+        ]
+        for i in range(2, 5):
+            value = getattr(self, 'answer_{}'.format(i))
+            if getattr(self, 'answer_{}'.format(i)):
+                a.append({'correct': False, 'text': _(value)})
+
+        random.shuffle(a)
+        return a
+
+    def render(self, **kwargs):
+        return render_to_string(
+            'quizentry.html',
+            {
+                'question': _(self.question),
+                'image': self.image,
+                'answers': self.answers,
+            }
+        )
+
+
+
 Page.create_content_type(RichTextEntry)
 Page.create_content_type(MediaParagraphEntry,
                          TYPE_CHOICES=(('default', 'default'),))
 Page.create_content_type(FAQEntry)
 Page.create_content_type(YouTubeParagraphEntry)
+Page.create_content_type(QuizEntry)

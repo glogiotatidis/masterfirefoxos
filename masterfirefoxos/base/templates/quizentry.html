@@ -1,0 +1,11 @@
+<div class="quiz">
+  <h3 class="quiz-question">{{ question }}</h3>
+  {% if image %}
+  <img src="{{ image.url }}">
+  {% endif %}
+  {% for answer in answers %}
+  <div class="quiz-answer">
+    {{ answer.text }}
+  </div>
+  {% endfor %}
+</div>
