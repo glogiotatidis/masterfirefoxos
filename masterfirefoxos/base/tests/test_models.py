@@ -15,6 +15,7 @@ def test_media_paragraph_render():
     test_data = {'title': 'Test Title', 'text': 'test text'}
     entry = models.ImageParagraphEntry(**test_data)
     entry.image = ImageField()
+    entry.image.name = 'foo.jpg'
     entry.image.url = 'test mediafile url'
     rendered = entry.render()
     assert 'test mediafile url' in rendered
