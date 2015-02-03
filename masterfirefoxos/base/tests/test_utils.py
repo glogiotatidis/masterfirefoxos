@@ -3,6 +3,7 @@ from unittest.mock import Mock, patch
 from django.test import override_settings, RequestFactory
 
 from feincms.module.page.models import Page
+from jinja2 import Markup
 
 from .. import models
 from .. import utils
@@ -105,7 +106,9 @@ def test_youtube_embed_url_subtitle_querystring(mock_gettext):
     request = RequestFactory().get('/xx/introduction/')
     expected = ('https://www.youtube.com/embed/en-youtube-id' +
                 '?hl=xx&cc_lang_pref=xx&cc_load_policy=1')
-    assert utils.youtube_embed_url(request, 'en-youtube-id') == expected
+    result = utils.youtube_embed_url(request, 'en-youtube-id')
+    assert isinstance(result, Markup)
+    assert result == expected
     mock_gettext.assert_called_with('en-youtube-id')
 
 

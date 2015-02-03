@@ -4,6 +4,7 @@ from itertools import chain
 from django.utils.translation import ugettext as _
 
 from feincms.module.page.models import Page
+from jinja2 import Markup
 
 
 page_template_template = '''
@@ -72,5 +73,5 @@ def youtube_embed_url(request, en_youtube_id):
             not request.path.startswith('/en/')):
         query_template = '?hl={lang}&cc_lang_pref={lang}&cc_load_policy=1'
         lang = request.path.split('/')[1]  # validity ensured by middleware
-        return embed + youtube_id + query_template.format(lang=lang)
+        return Markup(embed + youtube_id + query_template.format(lang=lang))
     return embed + youtube_id
