@@ -1,4 +1,7 @@
 FROM python:3.4-wheezy
+
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update &&\
     apt-get install -y --no-install-recommends libpq-dev gettext libjpeg8-dev postgresql-client &&\
     apt-get remove mysql-common -y && apt-get autoremove -y &&\
