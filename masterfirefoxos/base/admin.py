@@ -15,8 +15,8 @@ from .utils import copy_tree
 class PageAdminForm(PageAdminFormOld):
     class Media:
         js = [
-            '//tinymce.cachefly.net/4.1/tinymce.min.js',
-            'js/init_tinymce.js'
+            # '//tinymce.cachefly.net/4.1/tinymce.min.js',
+            # 'js/init_tinymce.js'
         ]
 
 
