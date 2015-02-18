@@ -3,7 +3,7 @@
     <label for="language">{{ _('Language') }}</label>
     <select id="language" name="language">
     {% for language_code, language in settings.LANGUAGES %}
-      {% if language_code in settings.LOCALE_LATEST_VERSION or request.user.is_authenticated() %}
+      {% if language_code in active_language_codes() or request.user.is_authenticated() %}
 	{{ activate(language_code) }}
 	<option value="{{ language_code }}"{% if request.path.startswith('/' + language_code) %} selected="true"{% endif %}>{{ _(language)|capitalize }}</option>
       {% endif %}
@@ -14,8 +14,8 @@
   <p>
     <label for="version">{{ _('Firefox OS version') }}</label>
     <select id="version" name="version">
-    {% for version, data in settings.VERSIONS_LOCALE_MAP.items() %}
-      <option value="{{ data['slug'] }}"{% if version == active_version(request) %} selected="true"{% endif %}>{{ version }}</option>
+    {% for version, slug in get_versions() %}
+      <option value="{{ slug }}"{% if version == active_version(request) %} selected="true"{% endif %}>{{ version }}</option>
     {% endfor %}
     </select>
     <a href="{{ feincms_page.get_root().get_absolute_url() }}which-version">{{ _('Which version do I have?') }}</a>

@@ -1,6 +1,7 @@
-from django.test.utils import override_settings
+from unittest.mock import Mock, patch
 
-from masterfirefoxos.base.tests import TEST_VERSIONS_LOCALE_MAP
+from django.core.exceptions import ObjectDoesNotExist
+
 from cleanup_po import code_string, get_versions_for_locale, valid_version
 
 
@@ -16,8 +17,21 @@ def test_valid_version():
     assert valid_version(comment, ['2-0', '1-3']) is False
 
 
-@override_settings(VERSIONS_LOCALE_MAP=TEST_VERSIONS_LOCALE_MAP)
 def test_get_versions_for_locale():
-    assert get_versions_for_locale('xx') == ['version-90']
-    assert set(get_versions_for_locale('en')) == set(['version-90', 'version-100t'])
-    assert set(get_versions_for_locale('foo')) == set(['version-90', 'version-100t'])
+    def _test(locale, versions, pending_versions):
+        with patch('cleanup_po.Locale') as LocaleMock:
+            locale_mock = Mock()
+            locale_mock.versions.values_list.return_value = versions
+            locale_mock.pending_versions.values_list.return_value = pending_versions
+            LocaleMock.objects.get.return_value = locale_mock
+            assert set(get_versions_for_locale(locale)) == set(versions + pending_versions)
+    _test('xx', ['version-90'], [])
+    _test('en', ['version-90', 'version-100t'], [])
+    _test('foo', [], ['version-100t'])
+    _test('bar', ['version-90'], ['version-100t'])
+
+
+def test_get_versions_for_non_existent_locale():
+    with patch('cleanup_po.Locale') as LocaleMock:
+        LocaleMock.objects.get.side_effect = [ObjectDoesNotExist]
+        assert get_versions_for_locale('xx') == []

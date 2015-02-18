@@ -25,13 +25,6 @@ Step three will copy all pages of version 1.3T into a new tree
 
       For slug use dashes instead of dots.
 
-5. Add in `masterfirefoxos.settings.base`::
-
-     VERSIONS_LOCALE_MAP['2.0'] = {
-       'slug': '2-0',
-       'locales': [
-     ]}
-
 And you're done. Edit the content and once you're ready activate
 locales for translation. Read `Managing the Versions of Documentation
 per locale`_.
@@ -66,14 +59,14 @@ Managing the Versions of Documentation per locale
 ------------------------------------------------
 
 A locale gets activated once it gets linked with a Version of the
-Documentation. For example to link locale `foo` with version `1.1` edit
-`masterfirefoxos.settings.base.VERSIONS_LOCALE_MAP`::
+Documentation. For example to link locale `el` with version `1.1`
+edit locale's entry on
+https://prod.masterfirefoxos.com/admin/base/locale/:
 
-  VERSIONS_LOCALE_MAP['1.1'] = {
-    'slug': '1-1',
-    'locales': [
-        'en', 'foo'
-    ]}
+.. image:: images/version11.png
+
+
+Update `Latest version` drop-down if needed.
 
 .. note::
 
@@ -85,18 +78,11 @@ Documentation. For example to link locale `foo` with version `1.1` edit
    Check if the locale is also in the `pending_locales` list and
    remove it.
 
-If locale `foo` is still work in progress (e.g. translations are not
-complete yet) instead of appending the `locales` list, add it to
-`pending_locales` list::
+If version `2.0` for locale `el` is still work in progress (e.g.
+translations are not complete yet) instead of appending the `locales`
+list, add it to `pending_locales` list:
 
-  VERSIONS_LOCALE_MAP['1.1'] = {
-    'slug': '1-1',
-    'locales': [
-        'en'
-    ],
-    'pending_locales': [
-        'foo'
-    ]}
+.. image:: images/version2-pending.png
 
 This will ensure that localization strings get generated but it will
 not display on the site.

@@ -1,5 +1,8 @@
-from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
+
+from .helpers import slug_to_version
+from .models import Locale, Page
 
 
 class NonExistentLocaleRedirectionMiddleware(object):
@@ -17,7 +20,8 @@ class NonExistentLocaleRedirectionMiddleware(object):
     """
 
     def process_request(self, request):
-        if hasattr(request, 'user') and request.user.is_authenticated():
+        if ((hasattr(request, 'user') and request.user.is_authenticated())
+            or request.path.startswith('/admin')):
             return
 
         if request.path.startswith('/en/'):
@@ -35,16 +39,24 @@ class NonExistentLocaleRedirectionMiddleware(object):
             # let's play it safe and just return if that ever happens.
             return
 
-        for version, data in settings.VERSIONS_LOCALE_MAP.items():
-            if data.get('slug') == version_slug:
-                if locale not in data.get('locales'):
-                    url_breakdown[1] = 'en'
-                    new_path = '/'.join(url_breakdown)
-                    params = request.GET.copy()
-                    params['from-lang'] = locale
-                    latest = settings.LOCALE_LATEST_VERSION.get(locale)
-                    if latest:
-                        params['latest-version'] = latest['name']
-                    return HttpResponseRedirect(
-                        '?'.join([new_path, params.urlencode()]))
-                return
+        try:
+            locale_obj = Locale.objects.get(code=locale)
+        except ObjectDoesNotExist:
+            locale_obj = None
+
+        # If locale exists, version exists but version in locale does not exist.
+        if (locale_obj and not locale_obj.versions.filter(slug=version_slug).exists()
+            and Page.objects.filter(parent__isnull=True, slug=version_slug).exists()):
+
+            url_breakdown[1] = 'en'
+            new_path = '/'.join(url_breakdown)
+            params = request.GET.copy()
+            params['from-lang'] = locale
+            if locale_obj:
+                latest = locale_obj.latest_version
+                if latest:
+                    params['latest-version'] = slug_to_version(latest.slug)
+            return HttpResponseRedirect(
+                '?'.join([new_path, params.urlencode()]))
+
+        return

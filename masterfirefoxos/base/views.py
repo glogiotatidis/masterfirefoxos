@@ -1,10 +1,20 @@
-from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse, HttpResponseRedirect
+
+from .models import Locale
 
 
 def home_redirect(request):
-    version = settings.LOCALE_LATEST_VERSION.get(request.LANGUAGE_CODE)
-    if version:
-        return HttpResponseRedirect(version['slug'] + '/')
-    return HttpResponseRedirect(
-        '/{}/{}/'.format('en', settings.LOCALE_LATEST_VERSION['en']['slug']))
+    try:
+        locale = Locale.objects.get(code=request.LANGUAGE_CODE)
+    except ObjectDoesNotExist:
+        try:
+            locale = Locale.objects.get(code='en')
+        except ObjectDoesNotExist:
+            locale = None
+
+    if locale and locale.latest_version:
+        return HttpResponseRedirect(
+            '/{}/{}/'.format(locale.code, locale.latest_version.slug))
+
+    return HttpResponse('Setup Locales in /admin first')

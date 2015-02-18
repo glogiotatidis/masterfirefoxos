@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
 import os
-from collections import OrderedDict
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -209,35 +208,6 @@ LANGUAGES = (
     ('zu', _('Zulu')),
 )
 LANGUAGE_NAMES = dict(LANGUAGES)
-
-VERSIONS_LOCALE_MAP = OrderedDict()
-VERSIONS_LOCALE_MAP['1.1'] = {
-    'slug': '1-1',
-    'locales': ['en'],
-    'pending_locales': [
-        'hr', 'cs', 'de', 'el', 'hu', 'it', 'pl', 'pt-br', 'sr', 'es', 'xx']}
-VERSIONS_LOCALE_MAP['1.3T'] = {
-    'slug': '1-3T',
-    'locales': ['en'],
-    'pending_locales': ['hi-in', 'ta', 'xx']}
-VERSIONS_LOCALE_MAP['1.4'] = {
-    'slug': '1-4',
-    'locales': ['en'],
-    'pending_locales': ['bn-bd', 'xx']}
-VERSIONS_LOCALE_MAP['2.0'] = {
-    'slug': '2-0',
-    'locales': ['en'],
-    'pending_locales': [
-        'af', 'ar', 'cs', 'de', 'es', 'fr', 'hu', 'ja', 'pl', 'pt-br', 'sw',
-        'wo', 'xh', 'xx', 'zu']}
-
-LOCALE_LATEST_VERSION = {}
-for name, version in VERSIONS_LOCALE_MAP.items():
-    for locale in version['locales']:
-        LOCALE_LATEST_VERSION[locale] = {
-            'slug': version['slug'],
-            'name': name,
-            }
 
 SSLIFY_DISABLE = config('DISABLE_SSL', default=DEBUG, cast=bool)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

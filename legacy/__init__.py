@@ -1,7 +1,7 @@
-from collections import defaultdict
-from functools import lru_cache
 import json
 import os
+from collections import defaultdict
+from functools import lru_cache
 
 from django.conf import settings
 from django.core.management import call_command
@@ -9,9 +9,10 @@ from django.db import DataError
 from django.db.models.fields import CharField, TextField
 from django.utils.text import slugify
 
+import polib
 from feincms.module.page.models import Page
 
-import polib
+from masterfirefoxos.base.models import Locale
 
 
 @lru_cache(maxsize=None)
@@ -219,14 +220,15 @@ def update_po(language, version):
 
 
 def create_pages_and_translations():
-    for version, locale_map in settings.VERSIONS_LOCALE_MAP.items():
+    for version in ['1.1', '1.3T', '1.4', '2.0']:
         create_pages(version=version)
         call_command('runscript', 'db_strings')
-        for locale in locale_map['locales']:
+        for locale in Locale.objects.all().values_list('code', flat=True):
             if locale == 'en':
                 continue
             call_command('makemessages', locale=[locale])
             update_po(locale, version)
+    call_command('runscript', 'cleanup_po')
     call_command('compilemessages')
 
 

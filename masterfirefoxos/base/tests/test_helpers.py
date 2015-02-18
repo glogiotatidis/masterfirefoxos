@@ -1,11 +1,11 @@
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from django.conf import settings
 from django.test import RequestFactory
 from django.test.utils import override_settings
 
 from . import MediaFileFactory, ImageFieldFactory
-from ..helpers import get_image_url, include_pontoon
+from ..helpers import get_image_url, get_versions, include_pontoon
 
 
 def test_get_image_url_base():
@@ -58,3 +58,11 @@ def test_include_pontoon_no_setting():
     request = RequestFactory().get('/')
     request.get_host = lambda: 'foo.example.com'
     assert not include_pontoon(request)
+
+
+def test_get_versions():
+    with patch('masterfirefoxos.base.helpers.Page') as PageMock:
+        page_mock = Mock()
+        page_mock.slug = '1-2'
+        PageMock.objects.filter.return_value = [page_mock]
+        assert get_versions() == [('1.2', '1-2')]

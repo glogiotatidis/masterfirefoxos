@@ -1,8 +1,11 @@
 import re
 
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 import polib
+
+from masterfirefoxos.base.models import Locale
 
 
 def code_string(occurrences):
@@ -20,12 +23,13 @@ def valid_version(comment, versions):
 
 
 def get_versions_for_locale(locale):
-    versions = []
-    for version, data in settings.VERSIONS_LOCALE_MAP.items():
-        if (locale in data.get('locales', [])
-            or locale in data.get('pending_locales', [])):
-            versions.append(data['slug'])
-    return versions
+    try:
+        locale = Locale.objects.get(code=locale)
+    except ObjectDoesNotExist:
+        return []
+
+    return (list(locale.versions.values_list('slug', flat=True)) +
+            list(locale.pending_versions.values_list('slug', flat=True)))
 
 
 def run(*args):

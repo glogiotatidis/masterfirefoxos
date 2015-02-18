@@ -11,6 +11,8 @@ from jingo import register
 from jinja2 import Markup
 from sorl.thumbnail import get_thumbnail
 
+from masterfirefoxos.base.models import Locale, Page
+
 
 static = register.function(static_helper)
 
@@ -32,11 +34,14 @@ def activate(language):
 
 
 @register.function
+def slug_to_version(slug):
+    return slug.replace('-', '.')
+
+
+@register.function
 def active_version(request):
     slug = request.path.split('/')[2]
-    for version, data in settings.VERSIONS_LOCALE_MAP.items():
-        if data['slug'] == slug:
-            return version
+    return slug_to_version(slug)
 
 
 @register.function
@@ -67,3 +72,15 @@ def get_image_url(img, geometry=None, locale=None):
 @register.function
 def include_pontoon(request):
     return request.get_host() == getattr(settings, 'LOCALIZATION_HOST', None)
+
+
+@register.function
+def get_versions():
+    return [(slug_to_version(p.slug), p.slug)
+            for p in Page.objects.filter(parent__isnull=True)]
+
+
+@register.function
+def active_language_codes():
+    return (Locale.objects
+            .exclude(versions__isnull=True).values_list('code', flat=True))

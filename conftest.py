@@ -1,5 +1,7 @@
 import pytest
-from django.conf import settings
+
+from masterfirefoxos.base.helpers import active_language_codes
+from masterfirefoxos.base.models import Page
 
 
 def pytest_addoption(parser):
@@ -23,6 +25,6 @@ def base_url(request):
 
 @pytest.fixture
 def base_urls(base_url):
-    return ['/'.join([base_url, locale, data['slug'], ''])
-            for version, data in settings.VERSIONS_LOCALE_MAP.items()
-            for locale in data['locales']]
+    return ['/'.join([base_url, locale, slug, ''])
+            for slug in Page.objects.filter(parent__isnull=True).values_list('slug', flat=True)
+            for locale in active_language_codes()]
