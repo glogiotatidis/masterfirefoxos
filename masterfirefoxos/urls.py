@@ -9,5 +9,6 @@ urlpatterns = patterns('',
 
 urlpatterns += i18n_patterns('',
     url(r'^$', 'masterfirefoxos.base.views.home_redirect'),
+    url(r'^logged_in/$', 'masterfirefoxos.base.views.logged_in', name='logged_in'),
     url(r'', include('feincms.urls')),
 )

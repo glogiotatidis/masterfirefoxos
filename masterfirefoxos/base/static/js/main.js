@@ -134,5 +134,25 @@
             }
         }
     }
+
+    function getAuthenticationStatus() {
+      if (!window.XMLHttpRequest) {
+        return;
+      }
+      var logged_in_url = document.body.dataset.loggedInUrl;
+      var request = new XMLHttpRequest();
+      var wrapper = document.getElementById('outer-wrapper');
+      request.open('GET', logged_in_url);
+      request.addEventListener('loadend', function() {
+        if (request.status == 200) {
+          var div = document.createElement('div');
+          div.innerHTML = request.responseText;
+          wrapper.insertBefore(div, wrapper.childNodes[0]);
+        }
+      }, false)
+      request.send();
+    }
+
     addSubmitToEachLastAnswer();
+    getAuthenticationStatus();
 })();

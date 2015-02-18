@@ -31,7 +31,8 @@
     {% endblock %}
 
   </head>
-  <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}">
+  <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}"
+        data-logged-in-url="{{ url('logged_in') }}">
     <span id="strings" data-submit="{{ _('Submit') }}"></span>
     <div id="outer-wrapper">
     {% block site_header %}
