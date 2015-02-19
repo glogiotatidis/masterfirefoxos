@@ -1,4 +1,6 @@
+import os
 import re
+import shutil
 
 from django.conf import settings
 
@@ -28,34 +30,44 @@ def get_versions_for_locale(locale):
     return versions
 
 
-def run(*args):
-    for locale, lang_name in settings.LANGUAGES:
-        print('Processing locale {}'.format(locale))
-        versions = get_versions_for_locale(locale)
-        try:
-            po = polib.pofile('locale/{}/LC_MESSAGES/django.po'.format(locale))
-        except OSError:
-            print('Cannot open po file for locale {}'.format(locale))
+def cleanup_po(version, django_pofile, pofile):
+    shutil.copy(django_pofile, pofile)
+    po = polib.pofile(pofile)
+    to_remove = []
+    for entry in po:
+        # Currently unused string, keep.
+        if len(entry.occurrences) == 0:
             continue
 
-        to_remove = []
-        for entry in po:
-            # Currently unused string, keep.
-            if len(entry.occurrences) == 0:
-                continue
+        if version == 'common':
+            if not code_string(entry.occurrences):
+                to_remove.append(entry)
+        else:
+            if (code_string(entry.occurrences) or
+                not valid_version(entry.comment, [version])):
+                to_remove.append(entry)
 
-            # String that appears in code, keep.
-            if code_string(entry.occurrences):
-                continue
-
-            # String from documenation version valid for locale, keep.
-            if valid_version(entry.comment, versions):
-                continue
-
-            # Delete entry.
-            to_remove.append(entry)
-
+    if to_remove:
         for entry in to_remove:
             po.remove(entry)
-        if to_remove:
-            po.save()
+
+        po.save()
+
+
+def run(*args):
+    for locale, lang_name in list(settings.LANGUAGES) + [('templates', 'templates')]:
+        if locale == 'templates':
+            versions = ['1-1', '1-3T', '1-4', '2-0']
+            pot_or_not = 't'
+        else:
+            versions = get_versions_for_locale(locale)
+            pot_or_not = ''
+
+        django_pofile = 'locale/{}/LC_MESSAGES/django.po{}'.format(locale, pot_or_not)
+        if not os.path.exists(django_pofile):
+            print('Cannot open po file {}'.format(django_pofile))
+            continue
+
+        for version in ['common'] + versions:
+            pofile = 'locale/{}/LC_MESSAGES/{}.po{}'.format(locale, version, pot_or_not)
+            cleanup_po(version, django_pofile, pofile)
