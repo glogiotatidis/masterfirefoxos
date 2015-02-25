@@ -1,7 +1,7 @@
-import pytest
+from django.core.urlresolvers import reverse
 
-from masterfirefoxos.base.helpers import active_language_codes
-from masterfirefoxos.base.models import Page
+import pytest
+import requests
 
 
 def pytest_addoption(parser):
@@ -24,7 +24,5 @@ def base_url(request):
 
 
 @pytest.fixture
-def base_urls(base_url):
-    return ['/'.join([base_url, locale, slug, ''])
-            for slug in Page.objects.filter(parent__isnull=True).values_list('slug', flat=True)
-            for locale in active_language_codes()]
+def urls(base_url):
+    return requests.get('{}{}'.format(base_url, reverse('all_pages'))).json()

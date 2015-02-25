@@ -11,52 +11,56 @@ def assert_ok(url):
         response.status_code, url)
 
 
-def get_all_versions(base_urls, slug):
-    for url in base_urls:
-        assert_ok('{}{}/'.format(url, slug))
+def get_all_versions(base_url, urls):
+    for url in urls:
+        assert_ok('{}{}'.format(base_url, url))
 
 
 @acceptance
-def test_home_pages(base_urls):
-    for url in base_urls:
-        assert_ok(url)
+def test_introduction(base_url, urls):
+    get_all_versions(base_url, urls['introduction'])
 
 
 @acceptance
-def test_introduction(base_urls):
-    get_all_versions(base_urls, 'introduction')
+def test_demo_tips(base_url, urls):
+    get_all_versions(base_url, urls['demo-tips'])
 
 
 @acceptance
-def test_demo_tips(base_urls):
-    get_all_versions(base_urls, 'demo-tips')
+def test_customer_guide(base_url, urls):
+    get_all_versions(base_url, urls['customer-guide'])
 
 
 @acceptance
-def test_customer_guide(base_urls):
-    get_all_versions(base_urls, 'customer-guide')
+def test_key_features(base_url, urls):
+    get_all_versions(base_url, urls['key-features'])
 
 
 @acceptance
-def test_key_features(base_urls):
-    get_all_versions(base_urls, 'key-features')
+def test_faq(base_url, urls):
+    get_all_versions(base_url, urls['frequently-asked-questions'])
 
 
 @acceptance
-def test_faq(base_urls):
-    get_all_versions(base_urls, 'frequently-asked-questions')
+def test_about(base_url, urls):
+    get_all_versions(base_url, urls['about'])
 
 
 @acceptance
-def test_about(base_urls):
-    get_all_versions(base_urls, 'about')
+def test_quiz(base_url, urls):
+    get_all_versions(base_url, urls['take-the-challenge'])
 
 
 @acceptance
-def test_quiz(base_urls):
-    get_all_versions(base_urls, 'take-the-challenge')
+def test_which_version(base_url, urls):
+    get_all_versions(base_url, urls['which-version'])
 
 
 @acceptance
-def test_which_version(base_urls):
-    get_all_versions(base_urls, 'which-version')
+def test_other_pages(base_url, urls):
+    pages = list((set(urls.keys()) -
+             set(['which-version', 'take-the-challenge', 'the-firefox-mission',
+                  'frequently-asked-questions', 'key-features', 'customer-guide',
+                  'demo-tips', 'introduction'])))
+    for page in pages:
+        get_all_versions(base_url, urls[page])
