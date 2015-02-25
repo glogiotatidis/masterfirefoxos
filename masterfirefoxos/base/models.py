@@ -187,7 +187,8 @@ def trim_content(sender, instance, **kwargs):
 
 
 class Locale(models.Model):
-    code = models.CharField(max_length=10, choices=settings.LANGUAGES, unique=True)
+    code = models.CharField(max_length=10, choices=settings.LANGUAGES,
+                            unique=True, db_index=True)
     latest_version = models.ForeignKey(
         Page, blank=True, null=True,
         limit_choices_to={'parent__isnull': True})
